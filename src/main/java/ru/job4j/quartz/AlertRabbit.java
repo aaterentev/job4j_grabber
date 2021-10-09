@@ -15,23 +15,23 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 public class AlertRabbit {
+    private static Properties properties;
 
-    private static Properties readProp() {
-        Properties config = new Properties();
+    private static void readProp() {
+        properties = new Properties();
         try (InputStream in = AlertRabbit.class.getClassLoader()
                 .getResourceAsStream("rabbit.properties")) {
-            config.load(in);
+            properties.load(in);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return config;
     }
 
     private static int getInterval() {
         readProp();
         int rsl = 0;
         try {
-            rsl = Integer.parseInt(readProp().getProperty("rabbit.interval"));
+            rsl = Integer.parseInt(properties.getProperty("rabbit.interval"));
         } catch (Exception e) {
             throw new IllegalArgumentException("file rabbit.properties is corrupted");
         }
@@ -39,13 +39,14 @@ public class AlertRabbit {
     }
 
     private static Connection initConnection() {
+        readProp();
         Connection cn = null;
         try {
-            Class.forName(readProp().getProperty("driver-class-name"));
+            Class.forName(properties.getProperty("driver-class-name"));
             cn = DriverManager.getConnection(
-                    readProp().getProperty("url"),
-                    readProp().getProperty("username"),
-                    readProp().getProperty("password")
+                    properties.getProperty("url"),
+                    properties.getProperty("username"),
+                    properties.getProperty("password")
             );
         } catch (Exception e) {
             e.printStackTrace();
