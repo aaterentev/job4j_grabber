@@ -6,8 +6,6 @@ import org.quartz.impl.StdSchedulerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import static org.quartz.JobBuilder.newJob;
@@ -25,24 +23,17 @@ public class AlertRabbit {
         return properties;
     }
 
-    private static Connection initConnection(Properties properties) {
-        Connection cn = null;
-        try {
-            Class.forName(properties.getProperty("driver-class-name"));
-            cn = DriverManager.getConnection(
-                    properties.getProperty("url"),
-                    properties.getProperty("username"),
-                    properties.getProperty("password"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return cn;
+    private static Connection initConnection(Properties properties) throws ClassNotFoundException, SQLException {
+        Class.forName(properties.getProperty("driver-class-name"));
+        return DriverManager.getConnection(
+                properties.getProperty("url"),
+                properties.getProperty("username"),
+                properties.getProperty("password"));
     }
 
     public static void main(String[] args) throws Exception {
         Properties pr = readProperties();
         try (Connection cn = initConnection(pr)) {
-            List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
@@ -67,7 +58,7 @@ public class AlertRabbit {
         }
 
         @Override
-        public void execute(JobExecutionContext context) throws JobExecutionException {
+        public void execute(JobExecutionContext context)  {
             String sql = "insert into rabbit(created_date) values (?)";
             System.out.println("Rabbit runs here ...");
             Connection connection = (Connection) context.getJobDetail()
