@@ -18,7 +18,8 @@ public class AlertRabbit {
 
     private static Properties readProperties() throws IOException {
         Properties properties = new Properties();
-        try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
+        try (InputStream in = AlertRabbit.class.getClassLoader()
+                .getResourceAsStream("rabbit.properties")) {
             properties.load(in);
         }
         return properties;
