@@ -23,7 +23,8 @@ public class AlertRabbit {
         return properties;
     }
 
-    private static Connection initConnection(Properties properties) throws ClassNotFoundException, SQLException {
+    private static Connection initConnection(Properties properties)
+            throws ClassNotFoundException, SQLException {
         Class.forName(properties.getProperty("driver-class-name"));
         return DriverManager.getConnection(
                 properties.getProperty("url"),
