@@ -72,15 +72,19 @@ public class Post {
 
         Post p = (Post) o;
 
+        if (id != p.id) {
+            return false;
+        }
+
         return Objects.equals(title, p.title) && Objects.equals(link, p.link)
-                && Objects.equals(description, p.description) && Objects.equals(created, p.created);
+                && Objects.equals(created, p.created);
     }
 
     @Override
     public int hashCode() {
-        int rsl = title == null ? 0 : title.hashCode();
+        int rsl = id;
+        rsl = 31 * rsl + (title == null ? 0 : title.hashCode());
         rsl = 31 * rsl + (link == null ? 0 : link.hashCode());
-        rsl = 31 * rsl + (description == null ? 0 : description.hashCode());
         rsl = 31 * rsl + (created == null ? 0 : created.hashCode());
         return rsl;
     }
