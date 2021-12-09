@@ -1,11 +1,5 @@
 package ru.job4j.html;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import ru.job4j.utils.DateTimeParser;
-import ru.job4j.utils.SqlRuDateTimeParser;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,15 +16,6 @@ public class Post {
     private String link;
     private String description;
     private LocalDateTime created;
-
-    public Post(String url) throws IOException {
-        this.link = url;
-        try {
-            parse(url);
-        } catch (IOException e) {
-            throw new IOException("Ошибка парсинга ссылки.");
-        }
-    }
 
     public int getId() {
         return id;
@@ -70,32 +55,6 @@ public class Post {
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
-    }
-
-    private void parse(String url) throws IOException {
-        Document doc = Jsoup.connect(url).get();
-        Element first = doc.selectFirst(".msgTable");
-        this.title = first.select(".messageHeader").get(0).ownText();
-        this.description = first.select(".msgBody").get(1).ownText();
-        var date = first.select(".msgFooter").get(0).ownText().substring(0, 16);
-        date = validateDate(date);
-        DateTimeParser parser = new SqlRuDateTimeParser();
-        this.created = parser.parse(date);
-    }
-
-    /**
-     * Метод устраняет ошибку при получении даты, у которой день
-     * составляет 1 цифру, т.е. до 10 числа
-     *
-     * @param date дата
-     * @return строка из 15 символов
-     */
-    private String validateDate(String date) {
-        String rsl = date;
-        if (date.endsWith(" ")) {
-            rsl = date.substring(0, 15);
-        }
-        return rsl;
     }
 
     /**
@@ -146,10 +105,11 @@ public class Post {
      * @throws IOException ошибка парсинга
      */
     public static void main(String[] args) throws IOException {
-        Post p = new Post("https://www.sql.ru/forum/1325330/"
+        PostParser postParser = new PostParser();
+        Post p = postParser.parseFromUrl("https://www.sql.ru/forum/1325330/"
                 + "lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
         System.out.println(p);
-        Post newPost = new Post("https://www.sql.ru/forum/1340678/"
+        Post newPost = postParser.parseFromUrl("https://www.sql.ru/forum/1340678/"
                 + "ishhem-razrabotchika-v-krupnyy-amerikanskiy-vendor-moskva-ofis");
         System.out.println(newPost);
     }
