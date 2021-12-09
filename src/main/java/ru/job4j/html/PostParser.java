@@ -26,24 +26,8 @@ public class PostParser {
         post.setTitle(first.select(".messageHeader").get(0).ownText());
         post.setDescription(first.select(".msgBody").get(1).ownText());
         var date = first.select(".msgFooter").get(0).ownText().substring(0, 16);
-        date = validateDate(date);
         DateTimeParser parser = new SqlRuDateTimeParser();
         post.setCreated(parser.parse(date));
         return post;
-    }
-
-    /**
-     * Метод устраняет ошибку при получении даты, у которой день
-     * составляет 1 цифру, т.е. до 10 числа
-     *
-     * @param date дата
-     * @return валидная строка (16 или 15 символов)
-     */
-    private String validateDate(String date) {
-        String rsl = date;
-        if (date.endsWith(" ")) {
-            rsl = date.substring(0, 15);
-        }
-        return rsl;
     }
 }
