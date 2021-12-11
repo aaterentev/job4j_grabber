@@ -4,11 +4,18 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import ru.job4j.utils.DateTimeParser;
 import ru.job4j.utils.SqlRuDateTimeParser;
 
 import java.io.IOException;
 
 public class SqlRuParse {
+    private final DateTimeParser dateTimeParser;
+
+    public SqlRuParse(DateTimeParser dateTimeParser) {
+        this.dateTimeParser = dateTimeParser;
+    }
+
     public static void main(String[] args) throws IOException {
 
         String baseUrl = "https://www.sql.ru/forum/job-offers";
