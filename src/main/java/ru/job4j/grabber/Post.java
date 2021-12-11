@@ -1,4 +1,4 @@
-package ru.job4j.html;
+package ru.job4j.grabber;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

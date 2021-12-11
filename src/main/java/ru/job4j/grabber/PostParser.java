@@ -1,8 +1,9 @@
-package ru.job4j.html;
+package ru.job4j.grabber;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import ru.job4j.grabber.Post;
 import ru.job4j.utils.DateTimeParser;
 import ru.job4j.utils.SqlRuDateTimeParser;
 
@@ -14,7 +15,7 @@ public class PostParser {
      * Метод получает данные по указанной ссылке и создает из этих данных
      * новый Пост
      * @param url ссылка на источник
-     * @return  {@link ru.job4j.html.Post}
+     * @return  {@link Post}
      * @throws IOException ошибка при получении данных.
      * Тело страницы сайта не содержит требуемых полей
      */
