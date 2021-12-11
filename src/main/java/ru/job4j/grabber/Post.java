@@ -1,5 +1,7 @@
 package ru.job4j.grabber;
 
+import ru.job4j.utils.SqlRuDateTimeParser;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -105,7 +107,7 @@ public class Post {
      * @throws IOException ошибка парсинга
      */
     public static void main(String[] args) throws IOException {
-        PostParser postParser = new PostParser();
+        PostParser postParser = new PostParser(new SqlRuDateTimeParser());
         Post p = postParser.parseFromUrl("https://www.sql.ru/forum/1325330/"
                 + "lidy-be-fe-senior-cistemnye-analitiki-qa-i-devops-moskva-do-200t");
         System.out.println(p);

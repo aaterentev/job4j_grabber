@@ -4,41 +4,78 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import ru.job4j.utils.DateTimeParser;
-import ru.job4j.utils.SqlRuDateTimeParser;
+import ru.job4j.grabber.*;
+import ru.job4j.utils.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SqlRuParse {
+public class SqlRuParse implements Parse {
+    private final PostParser postParser;
     private final DateTimeParser dateTimeParser;
 
     public SqlRuParse(DateTimeParser dateTimeParser) {
         this.dateTimeParser = dateTimeParser;
+        this.postParser = new PostParser(dateTimeParser);
     }
 
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args)  {
         String baseUrl = "https://www.sql.ru/forum/job-offers";
-        String url = baseUrl;
-        int counter = 0;
-        for (int i = 1; i <= 5; i++) {
+        SqlRuParse parse = new SqlRuParse(new SqlRuDateTimeParser());
+        List<Post> posts = parse.list(baseUrl);
+        posts.forEach(System.out::println);
+        System.out.println(posts.size());
+    }
+
+    @Override
+    public List<Post> list(String link) {
+        List<Post> postList = new ArrayList<>();
+        String url = link;
+        int i = 1;
+        int j = 2;
+        do {
+            try {
+                Document doc = Jsoup.connect(url).get();
+                Elements row = doc.select(".postslisttopic");
+                for (Element td : row) {
+                    Element href = td.child(0);
+                    Post p = detail(href.attr("href"));
+                    postList.add(p);
+                }
+                if (i == 1) {
+                    row = doc.select(".sort_options");
+                    j = row.stream().flatMap(x -> x.getElementsByAttributeValueContaining(
+                                            "href", link
+                                    )
+                                    .stream())
+                            .map(x -> {
+                                if (!x.text().isEmpty() && !x.text().equals("")) {
+                                    return Integer.parseInt(x.text());
+                                }
+                                return -1;
+                            })
+                            .reduce(-1, (x, y) -> x > y ? x : y);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            i++;
             if (i != 1) {
-                url = baseUrl + "/" + i;
+                url = link + "/" + i;
             }
-            Document doc = Jsoup.connect(url).get();
-            Elements row = doc.select(".postslisttopic");
-            for (Element td : row) {
-                Element href = td.child(0);
-                System.out.println(href.attr("href"));
-                System.out.println(href.text());
-                Element parent = td.parent();
-                String s = parent.children().get(5).text();
-                System.out.println(s);
-                SqlRuDateTimeParser parser = new SqlRuDateTimeParser();
-                System.out.println(parser.parse(s));
-                System.out.println("Номер вакансии: " + ++counter);
-            }
-            System.out.println("=================Конец страницы " + i + "=================");
+        } while (i < j && i < 5);
+        return postList;
+    }
+
+    @Override
+    public Post detail(String link) {
+        Post p = null;
+        try {
+            p = postParser.parseFromUrl(link);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return p;
     }
 }
