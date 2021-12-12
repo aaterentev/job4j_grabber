@@ -20,11 +20,10 @@ public class SqlRuParse implements Parse {
         this.postParser = new PostParser(dateTimeParser);
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         String baseUrl = "https://www.sql.ru/forum/job-offers";
         SqlRuParse parse = new SqlRuParse(new SqlRuDateTimeParser());
         List<Post> posts = parse.list(baseUrl);
-        posts.forEach(System.out::println);
         System.out.println(posts.size());
     }
 
@@ -32,8 +31,8 @@ public class SqlRuParse implements Parse {
     public List<Post> list(String link) {
         List<Post> postList = new ArrayList<>();
         String url = link;
-        int i = 1;
-        int j = 2;
+        int page = 1;
+        int maxPage = page;
         do {
             try {
                 Document doc = Jsoup.connect(url).get();
@@ -43,28 +42,24 @@ public class SqlRuParse implements Parse {
                     Post p = detail(href.attr("href"));
                     postList.add(p);
                 }
-                if (i == 1) {
+                if (page == 1) {
                     row = doc.select(".sort_options");
-                    j = row.stream().flatMap(x -> x.getElementsByAttributeValueContaining(
-                                            "href", link
-                                    )
-                                    .stream())
-                            .map(x -> {
-                                if (!x.text().isEmpty() && !x.text().equals("")) {
-                                    return Integer.parseInt(x.text());
-                                }
-                                return -1;
-                            })
-                            .reduce(-1, (x, y) -> x > y ? x : y);
+                    for (Element td : row) {
+                        var textFromElement = td.text();
+                        if (!textFromElement.isEmpty()) {
+                            String[] arrayOfPagesAndPostsData = textFromElement.split(" ");
+                            maxPage = Integer.parseInt(arrayOfPagesAndPostsData[12]);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            i++;
-            if (i != 1) {
-                url = link + "/" + i;
+            page++;
+            if (page != 1) {
+                url = link + "/" + page;
             }
-        } while (i < j && i < 5);
+        } while (page <= maxPage && page <= 5);
         return postList;
     }
 
