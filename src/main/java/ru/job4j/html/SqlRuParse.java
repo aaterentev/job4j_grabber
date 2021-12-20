@@ -34,14 +34,14 @@ public class SqlRuParse implements Parse {
                 Elements row = doc.select(".postslisttopic");
                 for (Element td : row) {
                     Element href = td.child(0);
-                    Post p = detail(href.attr("href"));
-                    String title = p.getTitle().toLowerCase();
+                    Post post = detail(href.attr("href"));
+                    String title = post.getTitle().toLowerCase();
                     if (title.contains("java") && !title.contains("javascript")) {
-                        postList.add(p);
+                        postList.add(post);
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
         }
         return postList;
@@ -58,8 +58,8 @@ public class SqlRuParse implements Parse {
             post.setDescription(first.select(".msgBody").get(1).ownText());
             var date = first.select(".msgFooter").get(0).ownText().substring(0, 16);
             post.setCreated(dateTimeParser.parse(date));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
         return post;
     }
