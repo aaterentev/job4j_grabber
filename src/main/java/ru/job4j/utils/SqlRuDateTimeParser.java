@@ -39,7 +39,7 @@ public class SqlRuDateTimeParser implements DateTimeParser {
 
         String[] dateArray = parse.split(", ");
         String dateFromString = dateArray[0];
-        String timeFromString = dateArray[1].trim();
+        String timeFromString = dateArray[1].split(" ")[0].trim();
         String[] date = dateFromString.split(" ");
 
         String tempDay;
