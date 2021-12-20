@@ -22,6 +22,7 @@ public class SqlRuParse implements Parse {
         String baseUrl = "https://www.sql.ru/forum/job-offers/";
         SqlRuParse parse = new SqlRuParse(new SqlRuDateTimeParser());
         List<Post> posts = parse.list(baseUrl);
+        System.out.println(posts.size());
     }
 
     @Override
@@ -34,7 +35,10 @@ public class SqlRuParse implements Parse {
                 for (Element td : row) {
                     Element href = td.child(0);
                     Post p = detail(href.attr("href"));
-                    postList.add(p);
+                    String title = p.getTitle().toLowerCase();
+                    if (title.contains("java") && !title.contains("javascript")) {
+                        postList.add(p);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
