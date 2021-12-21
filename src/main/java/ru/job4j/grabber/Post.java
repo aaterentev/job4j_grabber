@@ -7,6 +7,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+/**
+ * Post - класс реализующий модель данных поста с сайта Sql.ru
+ * @apiNote
+ * id - индекс, присваиваемый хранилищем;
+ * title - заголовок;
+ * link - ссылка на источник;
+ * description - описание;
+ * created - дата создания (тип: LocalDateTime);
+ * @author Alex Ter (ShaDar-ru)
+ * @version 1.0
+ */
 public class Post {
     private static final String NL = System.lineSeparator();
     private static final String DATE_TIME_PATTERN = "d M yyyy HH:mm";
